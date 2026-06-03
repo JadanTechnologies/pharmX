@@ -1,0 +1,6 @@
+{
+  "name": "Pharmacy Management & POS",
+  "description": "A full-stack, production-ready Pharmacy Management and Point-of-Sale (POS) application. Features real-time inventory tracking, smart checkout with offline support, prescription OCR, automated alerts, and advanced analytics.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

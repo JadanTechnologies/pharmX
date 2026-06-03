@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f8fafc; /* bg-slate-50 */
+}
+
+/* Dark Mode High-Contrast Pharmacy Overrides */
+.dark body {
+  background-color: #0c0e12 !important;
+  color: #f8fafc !important;
+}
+
+/* Card backgrounds */
+.dark .bg-white {
+  background-color: #161a23 !important;
+  color: #f8fafc !important;
+}
+
+/* Sidebar navigation rail inside dark mode */
+.dark nav#navigation_rail {
+  background-color: #11151e !important;
+  border-color: #1d2433 !important;
+}
+
+/* High-Density Header styling */
+.dark header {
+  background-color: #161a23 !important;
+  border-bottom-color: #242c3d !important;
+}
+
+.dark header .bg-slate-100 {
+  background-color: #1e2638 !important;
+  color: #cbd5e1 !important;
+}
+
+/* Slate background levels */
+.dark .bg-slate-50 {
+  background-color: #0c0e12 !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #202635 !important;
+}
+
+.dark .bg-slate-150,
+.dark .bg-slate-200,
+.dark .bg-slate-250 {
+  background-color: #242c3d !important;
+}
+
+/* Emerald highlights */
+.dark .bg-emerald-50 {
+  background-color: rgba(6, 78, 59, 0.25) !important;
+  color: #4ade80 !important;
+}
+
+.dark .bg-emerald-100 {
+  background-color: rgba(6, 78, 59, 0.45) !important;
+  color: #6ee7b7 !important;
+}
+
+.dark .bg-emerald-950,
+.dark .bg-emerald-900 {
+  background-color: #11151e !important;
+  border-color: #1d2433 !important;
+}
+
+.dark .text-emerald-450 {
+  color: #4ade80 !important;
+}
+
+/* Alert/Danger statuses */
+.dark .bg-rose-50 {
+  background-color: rgba(153, 27, 27, 0.2) !important;
+  color: #fca5a5 !important;
+}
+
+.dark .bg-rose-100 {
+  background-color: rgba(153, 27, 27, 0.4) !important;
+}
+
+/* Warnings */
+.dark .bg-amber-50 {
+  background-color: rgba(146, 64, 14, 0.2) !important;
+  color: #fcd34d !important;
+}
+
+.dark .bg-amber-100 {
+  background-color: rgba(146, 64, 14, 0.3) !important;
+}
+
+/* Teal links and links cards */
+.dark .bg-teal-50 {
+  background-color: rgba(17, 94, 89, 0.2) !important;
+  color: #2dd4bf !important;
+}
+
+/* Form and table input fields */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark select,
+.dark textarea {
+  background-color: #1e2638 !important;
+  color: #f8fafc !important;
+  border-color: #313d54 !important;
+}
+
+.dark input::placeholder {
+  color: #64748b !important;
+}
+
+.dark select option {
+  background-color: #161a23 !important;
+  color: #f8fafc !important;
+}
+
+/* Crispy borders */
+.dark [class*="border-slate-"],
+.dark [class*="border-emerald-100"],
+.dark [class*="border-emerald-200"],
+.dark [class*="border-teal-100"] {
+  border-color: #242d3d !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-150,
+.dark .border-slate-200,
+.dark .border-slate-205,
+.dark .border-slate-250,
+.dark .border-slate-202 {
+  border-color: #242d3d !important;
+}
+
+/* Primary texts */
+.dark .text-slate-800,
+.dark .text-slate-900,
+.dark .text-slate-950,
+.dark .text-slate-700,
+.dark .text-slate-705,
+.dark .text-slate-850 {
+  color: #f1f5f9 !important;
+}
+
+/* Secondary texts */
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+/* Muted / disabled texts */
+.dark .text-slate-400,
+.dark .text-slate-450 {
+  color: #64748b !important;
+}
+
+/* List active items on hover */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-emerald-50\/40:hover,
+.dark .hover\:bg-emerald-50\/50:hover,
+.dark .hover\:bg-emerald-50\/30:hover {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.dark .hover\:bg-slate-150:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-200:hover {
+  background-color: #242c3d !important;
+}
+
+.dark #navigation_rail .hover\:bg-emerald-800\/50:hover {
+  background-color: #1a2233 !important;
+}
+
+/* Secondary Actions Buttons */
+.dark button.bg-slate-50 {
+  background-color: #1e2638 !important;
+  border-color: #313d54 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark button.bg-slate-50:hover {
+  background-color: #242c3d !important;
+  color: #ffffff !important;
+}
+
+.dark button.bg-white {
+  background-color: #1e2638 !important;
+  border-color: #313d54 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark button.bg-white:hover {
+  background-color: #242c3d !important;
+  color: #ffffff !important;
+}
+
+/* Modals background and wrapper card */
+.dark .fixed.inset-0 {
+  background-color: rgba(3, 7, 18, 0.8) !important;
+}
+
+.dark .fixed .bg-white {
+  background-color: #161a23 !important;
+  border-color: #242c3d !important;
+}
+
+/* Checkout receipts */
+.dark .bg-slate-50\/55,
+.dark .bg-slate-55\/55 {
+  background-color: #1b212f !important;
+  border-color: #2b364c !important;
+}
+
+/* SVG Chart adjustments */
+.dark svg text {
+  fill: #94a3b8 !important;
+}
+
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #242c3d !important;
+}
+
+.dark .recharts-legend-item-text {
+  color: #f1f5f9 !important;
+}
+
+.dark .recharts-default-tooltip {
+  background-color: #161a23 !important;
+  border-color: #242c3d !important;
+}
+
+.dark .recharts-tooltip-item {
+  color: #4ade80 !important;
+}
+
+/* High contrast clinical text numbers */
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-850 {
+  color: #4ade80 !important;
+}
+
+.dark .text-teal-700,
+.dark .text-teal-800,
+.dark .text-teal-900 {
+  color: #2dd4bf !important;
+}
+
+.dark .text-rose-700 {
+  color: #f87171 !important;
+}
+
+.dark .text-amber-700 {
+  color: #fbbf24 !important;
+}
+
+/* Customized thin scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #0c0e12;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #242c3d;
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #313d54;
+}
+
