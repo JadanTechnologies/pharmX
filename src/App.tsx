@@ -18,6 +18,10 @@ import SuppliersOrders from './components/SuppliersOrders';
 import AIAnalyst from './components/AIAnalyst';
 import MultiBranch from './components/MultiBranch';
 import NotificationAudits from './components/NotificationAudits';
+import Reports from './components/Reports';
+import PatientManagement from './components/PatientManagement';
+import StaffManagement from './components/StaffManagement';
+import FinancialDashboard from './components/FinancialDashboard';
 import { useTheme } from './context/ThemeContext';
 
 // Import our rich medical default datasets for pure offline capability
@@ -31,7 +35,7 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   // Auth contexts
   const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'pos' | 'inventory' | 'prescriptions' | 'suppliers' | 'ai' | 'branches' | 'audits'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pos' | 'inventory' | 'prescriptions' | 'suppliers' | 'ai' | 'branches' | 'audits' | 'reports' | 'patients' | 'staff' | 'financials'>('dashboard');
 
   // Input elements for custom mock login form
   const [loginEmail, setLoginEmail] = useState('admin@pharmapos.com');
@@ -53,6 +57,10 @@ export default function App() {
       { key: 'ai', label: 'Clinical Analyst', icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />, id: 'nav_ai' },
       { key: 'branches', label: 'Branch Logistics', icon: <Network className="w-3.5 h-3.5 shrink-0" />, id: 'nav_branches', permission: 'inter_branch_transfer' },
       { key: 'audits', label: 'Audits & Security', icon: <Scroll className="w-3.5 h-3.5 shrink-0" />, id: 'nav_audits', permission: 'security_admin' },
+      { key: 'patients', label: 'Patients', icon: <UserCheck className="w-3.5 h-3.5 shrink-0" />, id: 'nav_patients', permission: 'security_admin' },
+      { key: 'staff', label: 'Staff & Access', icon: <ShieldX className="w-3.5 h-3.5 shrink-0" />, id: 'nav_staff', permission: 'security_admin' },
+      { key: 'financials', label: 'Financials', icon: <Building2 className="w-3.5 h-3.5 shrink-0" />, id: 'nav_financials', permission: 'security_admin' },
+      { key: 'reports', label: 'Reports', icon: <FileText className="w-3.5 h-3.5 shrink-0" />, id: 'nav_reports', permission: 'security_admin' },
     ];
     return tabs.filter(tab => !tab.permission || hasPermission(tab.permission));
   }, [currentUser]);
@@ -1124,6 +1132,22 @@ export default function App() {
               onUpdateUserRole={handleUpdateUserRole}
               onDeleteUser={handleDeleteUser}
             />
+          )}
+
+          {activeTab === 'reports' && (
+            <Reports currentUser={currentUser} />
+          )}
+
+          {activeTab === 'patients' && (
+            <PatientManagement currentUser={currentUser} />
+          )}
+
+          {activeTab === 'staff' && (
+            <StaffManagement currentUser={currentUser} />
+          )}
+
+          {activeTab === 'financials' && (
+            <FinancialDashboard currentUser={currentUser} />
           )}
         </main>
 

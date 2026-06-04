@@ -508,6 +508,137 @@ async function startServer() {
 
 
   // ==========================================
+  // Reports & Analytics
+  // ==========================================
+  app.get("/api/reports/sales", (req, res) => {
+    const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'security_admin')) {
+      return res.status(403).json({ error: 'Access Denied: Only admins can access sales reports.' });
+    }
+
+    const sales = db.getSales();
+    const drugs = db.getDrugs();
+    
+    const report = {
+      generatedAt: new Date().toISOString(),
+      generatedBy: user.email,
+      totalSales: sales.length,
+      totalRevenue: sales.reduce((sum, s) => sum + s.totalAmount, 0),
+      totalItemsSold: sales.reduce((sum, s) => sum + s.items.reduce((qs, i) => qs + i.quantity, 0), 0),
+      averageTransactionValue: sales.length > 0 ? sales.reduce((sum, s) => sum + s.totalAmount, 0) / sales.length : 0,
+      paymentMethods: {
+        cash: sales.filter(s => s.paymentMethod === 'cash').length,
+        card: sales.filter(s => s.paymentMethod === 'card').length,
+        transfer: sales.filter(s => s.paymentMethod === 'transfer').length
+      },
+      topProducts: sales
+        .flatMap(s => s.items.map(i => ({ drugId: i.drugId, quantity: i.quantity, revenue: i.quantity * i.pricePerUnit })))
+        .reduce((acc, item) => {
+          const existing = acc.find(a => a.drugId === item.drugId);
+          if (existing) {
+            existing.quantity += item.quantity;
+            existing.revenue += item.revenue;
+          } else {
+            acc.push(item);
+          }
+          return acc;
+        }, [])
+        .map(item => {
+          const drug = drugs.find(d => d.id === item.drugId);
+          return {
+            drugName: drug?.name || 'Unknown',
+            drugId: item.drugId,
+            unitsSold: item.quantity,
+            totalRevenue: item.revenue
+          };
+        })
+        .sort((a, b) => b.totalRevenue - a.totalRevenue)
+        .slice(0, 10),
+      salesByBranch: sales.reduce((acc, s) => {
+        const existing = acc.find(a => a.branchId === s.branchId);
+        if (existing) {
+          existing.count += 1;
+          existing.revenue += s.totalAmount;
+        } else {
+          acc.push({ branchId: s.branchId, count: 1, revenue: s.totalAmount });
+        }
+        return acc;
+      }, [])
+    };
+
+    res.json(report);
+  });
+
+  app.get("/api/reports/inventory", (req, res) => {
+    const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'security_admin')) {
+      return res.status(403).json({ error: 'Access Denied: Only admins can access inventory reports.' });
+    }
+
+    const drugs = db.getDrugs();
+    
+    const report = {
+      generatedAt: new Date().toISOString(),
+      generatedBy: user.email,
+      totalDrugs: drugs.length,
+      totalUnitsInStock: drugs.reduce((sum, d) => sum + d.quantity, 0),
+      totalInventoryValue: drugs.reduce((sum, d) => sum + d.quantity * d.costPrice, 0),
+      lowStockItems: drugs.filter(d => d.quantity < d.lowStockThreshold),
+      outOfStockItems: drugs.filter(d => d.quantity === 0),
+      expiryAlert: drugs.filter(d => {
+        const expiryDate = new Date(d.expiryDate);
+        const daysUntilExpiry = Math.floor((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        return daysUntilExpiry < 30 && daysUntilExpiry > 0;
+      }),
+      expiredBatches: drugs.filter(d => new Date(d.expiryDate) < new Date()),
+      byCategory: drugs.reduce((acc, d) => {
+        const existing = acc.find(a => a.category === d.category);
+        if (existing) {
+          existing.count += 1;
+          existing.totalUnits += d.quantity;
+          existing.value += d.quantity * d.costPrice;
+        } else {
+          acc.push({
+            category: d.category,
+            count: 1,
+            totalUnits: d.quantity,
+            value: d.quantity * d.costPrice
+          });
+        }
+        return acc;
+      }, [])
+    };
+
+    res.json(report);
+  });
+
+  app.get("/api/reports/transfers", (req, res) => {
+    const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'security_admin')) {
+      return res.status(403).json({ error: 'Access Denied: Only admins can access transfer reports.' });
+    }
+
+    const logs = db.getLogs().filter(l => l.action === 'Branch Stock Transfer');
+    
+    const report = {
+      generatedAt: new Date().toISOString(),
+      generatedBy: user.email,
+      totalTransfers: logs.length,
+      transfers: logs.map(l => ({
+        timestamp: l.timestamp,
+        details: l.details,
+        performedBy: l.email,
+        userId: l.userId
+      }))
+    };
+
+    res.json(report);
+  });
+
+  // ==========================================
   // Vite Integration & Static File Routing
   // ==========================================
   if (process.env.NODE_ENV !== "production") {
