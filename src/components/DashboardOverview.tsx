@@ -14,13 +14,17 @@ interface DashboardOverviewProps {
   drugs: Drug[];
   sales: Sale[];
   alerts: NotificationAlert[];
-  setActiveTab: (tab: string) => void;
+  navigateTo: (tab: string) => void;
   userBranch: string;
   onRefreshDatabases: () => Promise<void>;
 }
 
-export default function DashboardOverview({ drugs, sales, alerts, setActiveTab, userBranch, onRefreshDatabases }: DashboardOverviewProps) {
+export default function DashboardOverview({ drugs, sales, alerts, navigateTo, userBranch, onRefreshDatabases }: DashboardOverviewProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const navigateIfAllowed = (tab: string) => {
+    navigateTo(tab);
+  };
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
@@ -142,14 +146,14 @@ export default function DashboardOverview({ drugs, sales, alerts, setActiveTab, 
           </p>
           <div className="mt-4 flex flex-wrap gap-2.5">
             <button 
-              onClick={() => setActiveTab('pos')}
+              onClick={() => navigateIfAllowed('pos')}
               className="bg-emerald-400 hover:bg-emerald-350 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-md transition cursor-pointer flex items-center gap-1.5 shadow-sm"
               id="dash_btn_pos"
             >
               <ShoppingCart className="w-3.5 h-3.5" /> Open POS Terminal
             </button>
             <button 
-              onClick={() => setActiveTab('prescriptions')}
+              onClick={() => navigateIfAllowed('prescriptions')}
               className="bg-emerald-800 hover:bg-emerald-700/80 text-emerald-100 font-bold text-xs px-3.5 py-2 rounded-md border border-emerald-700/60 transition cursor-pointer flex items-center gap-1.5"
               id="dash_btn_presc"
             >

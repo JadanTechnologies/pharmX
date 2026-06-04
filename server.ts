@@ -22,6 +22,18 @@ async function startServer() {
     return { userId, email, role, name };
   };
 
+  const hasPermission = (user: { role: UserRole; permissions?: string[] }, permKey: string) => {
+    return user.role === 'admin' || (user.permissions && user.permissions.includes(permKey));
+  };
+
+  const requirePermission = (permKey: string) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const user = getContextUser(req);
+    if (!hasPermission(user, permKey)) {
+      return res.status(403).json({ error: `Access Denied: Missing required permission '${permKey}'.` });
+    }
+    next();
+  };
+
   // ==========================================
   // Auth Endpoints
   // ==========================================
@@ -72,8 +84,8 @@ async function startServer() {
     const user = getContextUser(req);
     
     // Server-side guard: Only admin is permitted to add a medication
-    if (user.role.toLowerCase() !== 'admin') {
-      return res.status(403).json({ error: "Access Denied: Only administrators are authorized to catalogue new medications." });
+    if (user.role.toLowerCase() !== 'admin' && !(user.permissions && user.permissions.includes('inventory_write'))) {
+      return res.status(403).json({ error: "Access Denied: Only administrators or staff with inventory write authorization are permitted to modify medications." });
     }
 
     const drugData = req.body;

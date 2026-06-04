@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Building2, LayoutDashboard, ShoppingCart, Pill, FileText, 
   Truck, Sparkles, Network, Scroll, LogOut, Bell, ShieldX, UserCheck,
@@ -39,7 +39,31 @@ export default function App() {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Core Data Tables loaded from local storage DB fellback
+  const hasPermission = (permKey: string) => {
+    return currentUser?.role === 'admin' || currentUser?.permissions?.includes(permKey);
+  };
+
+  const visibleTabs = useMemo(() => {
+    const tabs: { key: string; label: string; icon: React.ReactNode; id: string; permission?: string }[] = [
+      { key: 'dashboard', label: 'Overview Feed', icon: <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />, id: 'nav_dashboard' },
+      { key: 'pos', label: 'POS Billing', icon: <ShoppingCart className="w-3.5 h-3.5 shrink-0" />, id: 'nav_pos', permission: 'pos_checkout' },
+      { key: 'inventory', label: 'Drug Inventory', icon: <Pill className="w-3.5 h-3.5 shrink-0" />, id: 'nav_inventory', permission: 'inventory_write' },
+      { key: 'prescriptions', label: 'RX OCR Scanner', icon: <FileText className="w-3.5 h-3.5 shrink-0" />, id: 'nav_rx', permission: 'prescription_verify' },
+      { key: 'suppliers', label: 'Suppliers & PO', icon: <Truck className="w-3.5 h-3.5 shrink-0" />, id: 'nav_suppliers', permission: 'procurement_order' },
+      { key: 'ai', label: 'Clinical Analyst', icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />, id: 'nav_ai' },
+      { key: 'branches', label: 'Branch Logistics', icon: <Network className="w-3.5 h-3.5 shrink-0" />, id: 'nav_branches', permission: 'inter_branch_transfer' },
+      { key: 'audits', label: 'Audits & Security', icon: <Scroll className="w-3.5 h-3.5 shrink-0" />, id: 'nav_audits', permission: 'security_admin' },
+    ];
+    return tabs.filter(tab => !tab.permission || hasPermission(tab.permission));
+  }, [currentUser]);
+
+  const navigateTo = (tabKey: string) => {
+    handleTabChange(tabKey);
+  };
+
+  const canAccessTab = (tabKey: string) => {
+    return visibleTabs.some(t => t.key === tabKey);
+  };
   const [drugs, setDrugs] = useState<Drug[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -1001,82 +1025,18 @@ export default function App() {
           </div>
 
           <span className="block text-[9px] font-black text-emerald-400 uppercase tracking-widest pl-2 mb-2 pb-1">MANAGEMENT</span>
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'dashboard' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_dashboard"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5 shrink-0" /> Overview Feed
-          </button>
-          <button
-            onClick={() => setActiveTab('pos')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'pos' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_pos"
-          >
-            <ShoppingCart className="w-3.5 h-3.5 shrink-0" /> POS Billing
-          </button>
-          <button
-            onClick={() => setActiveTab('inventory')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'inventory' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_inventory"
-          >
-            <Pill className="w-3.5 h-3.5 shrink-0" /> Drug Inventory
-          </button>
-          <button
-            onClick={() => setActiveTab('prescriptions')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'prescriptions' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_rx"
-          >
-            <FileText className="w-3.5 h-3.5 shrink-0" /> RX OCR Scanner
-          </button>
-
-          <div className="h-px bg-emerald-800/60 my-3"></div>
-          <span className="block text-[9px] font-black text-emerald-400 uppercase tracking-widest pl-2 mb-2">SUPPLY & AI</span>
-
-          <button
-            onClick={() => setActiveTab('suppliers')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'suppliers' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_suppliers"
-          >
-            <Truck className="w-3.5 h-3.5 shrink-0" /> Suppliers & PO
-          </button>
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'ai' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_ai"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Clinical Analyst
-          </button>
-          <button
-            onClick={() => setActiveTab('branches')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'branches' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_branches"
-          >
-            <Network className="w-3.5 h-3.5 shrink-0" /> Branch Logistics
-          </button>
-          <button
-            onClick={() => setActiveTab('audits')}
-            className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-              activeTab === 'audits' ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
-            }`}
-            id="nav_audits"
-          >
-            <Scroll className="w-3.5 h-3.5 shrink-0" /> Audits & Security
-          </button>
+          {visibleTabs.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => handleTabChange(tab.key)}
+              className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
+                activeTab === tab.key ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
+              }`}
+              id={tab.id}
+            >
+              {tab.icon} {tab.label}
+            </button>
+          ))}
         </nav>
 
         {/* Dynamic Inner Tab Component Render */}
