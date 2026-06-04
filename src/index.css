@@ -7,47 +7,130 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+/* Global Styles */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-sans);
-  background-color: #f8fafc; /* bg-slate-50 */
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #1e293b;
 }
 
-/* Dark Mode High-Contrast Pharmacy Overrides */
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark Mode - Modern Professional Theme */
 .dark body {
-  background-color: #0c0e12 !important;
-  color: #f8fafc !important;
+  background: linear-gradient(135deg, #0f172a 0%, #0c0e12 50%, #1a1a2e 100%);
+  color: #e2e8f0;
 }
 
-/* Card backgrounds */
-.dark .bg-white {
-  background-color: #161a23 !important;
-  color: #f8fafc !important;
+.dark {
+  color-scheme: dark;
 }
 
-/* Sidebar navigation rail inside dark mode */
-.dark nav#navigation_rail {
-  background-color: #11151e !important;
-  border-color: #1d2433 !important;
+/* Header Enhancement */
+header {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-/* High-Density Header styling */
 .dark header {
-  background-color: #161a23 !important;
-  border-bottom-color: #242c3d !important;
+  background: linear-gradient(to right, #0f172a, #1a1a2e, #0f172a);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.dark header .bg-slate-100 {
-  background-color: #1e2638 !important;
-  color: #cbd5e1 !important;
+/* Navigation Rail */
+nav#navigation_rail {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
 }
 
-/* Slate background levels */
-.dark .bg-slate-50 {
-  background-color: #0c0e12 !important;
+.dark nav#navigation_rail {
+  background: linear-gradient(180deg, #1a1f2e 0%, #0f172a 100%);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.dark .bg-slate-100 {
-  background-color: #202635 !important;
+/* Main Content Area */
+main#tab_active_viewport {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.dark main#tab_active_viewport {
+  background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Card Styling */
+.dark .bg-white {
+  background-color: #1a1f2e !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(6, 182, 212, 0.1);
+}
+
+/* Gradient Text */
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, #06b6d4, #14b8a6);
+}
+
+/* Buttons Enhanced */
+button {
+  transition: all 0.3s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Focus States */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #06b6d4;
+  outline-offset: 2px;
+}
+
+/* Status Indicators */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Dark Mode Card backgrounds */
 }
 
 .dark .bg-slate-150,

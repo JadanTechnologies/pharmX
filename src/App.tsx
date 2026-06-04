@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Building2, LayoutDashboard, ShoppingCart, Pill, FileText, 
   Truck, Sparkles, Network, Scroll, LogOut, Bell, ShieldX, UserCheck,
-  Sun, Moon
+  Sun, Moon, AlertTriangle
 } from 'lucide-react';
 import { 
   Drug, Prescription, Supplier, PurchaseOrder, 
@@ -946,65 +946,54 @@ export default function App() {
 
   // Active Authenticated Interface Layout
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans" id="app_mainframe">
-      {/* High-Density Header */}
-      <header className="bg-white border-b border-slate-250 shrink-0 sticky top-0 z-40 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="bg-emerald-900 text-white p-2 rounded-lg">
-              <Building2 className="w-4 h-4 text-emerald-450" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col font-sans" id="app_mainframe">
+      {/* Modern Professional Header */}
+      <header className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 border-b border-slate-700/50 shrink-0 sticky top-0 z-40 shadow-lg backdrop-blur-sm bg-opacity-95">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-teal-400 to-cyan-500 text-white p-2.5 rounded-xl shadow-lg">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="font-extrabold text-sm text-slate-900 tracking-tight leading-none font-display">PharmaNexus</h1>
-              <p className="text-[9px] text-slate-400 mt-1 font-mono tracking-wider font-semibold">
-                CENTRAL OPERATIONS CONSOLE
-              </p>
+              <h1 className="font-black text-lg text-white tracking-tight leading-none font-display">PharmaCare PRO</h1>
+              <p className="text-[10px] text-cyan-400 mt-1 font-mono tracking-wider font-semibold">Advanced Pharmacy Management System</p>
             </div>
           </div>
 
-          {/* Right Session Status info & Live pill */}
+          {/* Right Session Status */}
           <div className="flex items-center gap-4">
-            {/* Status Live Pill */}
-            <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100/60 font-mono">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            <div className="flex items-center gap-2 text-[11px] font-bold text-cyan-300 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20 font-mono shadow-sm">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
               System Online
             </div>
 
-            <div className="bg-slate-100 px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 font-mono hidden sm:block">
-              Branch: {currentUser.branchCode || 'CPB-01'}
+            <div className="bg-slate-700/50 px-3 py-1.5 rounded-lg text-[11px] font-bold text-cyan-300 font-mono hidden sm:block border border-slate-600/50">
+              {currentUser.branchCode || 'CPB-01'}
             </div>
 
             <div className="hidden sm:flex flex-col text-right">
-              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5 justify-end">
-                <UserCheck className="w-3.5 h-3.5 text-emerald-600" /> {currentUser.name}
+              <span className="text-sm font-bold text-white flex items-center gap-1.5 justify-end">
+                <UserCheck className="w-4 h-4 text-cyan-400" /> {currentUser.name}
               </span>
-              <span className="text-[9px] text-slate-400 uppercase font-mono tracking-wider mt-0.5">
-                Role: {currentUser.role}
-              </span>
+              <span className="text-[10px] text-cyan-400/80 uppercase font-mono tracking-wider mt-0.5">{currentUser.role}</span>
             </div>
 
             <button 
               onClick={toggleTheme}
-              className="bg-slate-50 hover:bg-slate-150 border border-slate-200 text-slate-600 p-2 rounded-lg transition cursor-pointer flex items-center gap-1.5 shrink-0"
-              title={`Switch to ${theme === 'light' ? 'High-Contrast Dark' : 'Standard Light'} Mode`}
+              className="bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 hover:text-white p-2.5 rounded-lg transition duration-200 cursor-pointer flex items-center gap-1.5 shrink-0 shadow-md"
+              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
               id="theme_toggle_btn"
             >
               {theme === 'light' ? (
-                <>
-                  <Moon className="w-4 h-4 text-emerald-800" />
-                  <span className="text-[9.5px] font-black font-mono tracking-wider uppercase hidden md:inline">Low-Light</span>
-                </>
+                <Moon className="w-4 h-4 text-cyan-400" />
               ) : (
-                <>
-                  <Sun className="w-4 h-4 text-amber-500" />
-                  <span className="text-[9.5px] font-black font-mono tracking-wider uppercase hidden md:inline">Light Mode</span>
-                </>
+                <Sun className="w-4 h-4 text-amber-400" />
               )}
             </button>
 
             <button 
               onClick={() => setShowLogoutModal(true)}
-              className="bg-slate-50 hover:bg-rose-50 hover:text-rose-600 border border-slate-200 text-slate-500 hover:border-rose-100 p-2 rounded-lg transition cursor-pointer"
+              className="bg-slate-700 hover:bg-rose-600/20 hover:text-rose-400 border border-slate-600 hover:border-rose-500/50 text-slate-300 p-2.5 rounded-lg transition duration-200 cursor-pointer shadow-md"
               title="Logout Session"
               id="top_logout_btn"
             >
@@ -1014,19 +1003,19 @@ export default function App() {
         </div>
       </header>
 
-      {/* Connection Problem Ribbon */}
+      {/* API Error Banner */}
       {apiError && (
-        <div className="bg-rose-600 text-white text-[11px] font-semibold py-2 px-4 shadow-sm flex items-center justify-between text-wrap leading-relaxed animate-pulse">
-          <span>{apiError}</span>
-          <button onClick={loadAllDatabases} className="underline hover:no-underline font-mono px-2 py-0.5 bg-white/10 rounded">Sync Retry</button>
+        <div className="bg-gradient-to-r from-rose-600 to-rose-700 text-white text-[11px] font-semibold py-3 px-4 shadow-lg flex items-center justify-between leading-relaxed">
+          <span className="flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {apiError}</span>
+          <button onClick={loadAllDatabases} className="underline hover:no-underline font-mono px-2 py-0.5 bg-white/10 rounded hover:bg-white/20 transition">Retry</button>
         </div>
       )}
 
-      {/* Main Panel grid */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      {/* Main Content Area */}
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Sidebar Nav (High-Density Emerald Theme) */}
-        <nav className="lg:col-span-2 space-y-1 bg-emerald-900 p-3 border border-emerald-950 rounded-xl shadow-md text-emerald-50" id="navigation_rail">
+        {/* Modern Sidebar Navigation */}
+        <nav className="lg:col-span-2 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 p-4 border border-slate-700/50 rounded-2xl shadow-xl text-slate-100 h-fit sticky top-24" id="navigation_rail">
           <div className="flex items-center gap-2 border-b border-emerald-800 pb-2.5 mb-2.5 pl-1">
             <div className="w-5.5 h-5.5 bg-emerald-400 rounded flex items-center justify-center font-bold text-emerald-950 text-xs font-display">+</div>
             <h2 className="font-extrabold tracking-wider text-xs text-white uppercase font-display">CONSOLE RAIL</h2>
@@ -1037,8 +1026,10 @@ export default function App() {
             <button
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
-              className={`w-full text-left py-2 px-3 rounded-md text-xs font-medium flex items-center gap-2.5 transition duration-150 cursor-pointer ${
-                activeTab === tab.key ? 'bg-emerald-800 text-white shadow-xs font-bold' : 'text-emerald-100/80 hover:bg-emerald-800/50 hover:text-white'
+              className={`w-full text-left py-2.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition duration-200 cursor-pointer ${
+                activeTab === tab.key 
+                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg font-bold' 
+                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
               }`}
               id={tab.id}
             >
@@ -1048,7 +1039,7 @@ export default function App() {
         </nav>
 
         {/* Dynamic Inner Tab Component Render */}
-        <main className="lg:col-span-10 min-h-[520px]" id="tab_active_viewport">
+        <main className="lg:col-span-10 min-h-[600px] rounded-2xl overflow-hidden" id="tab_active_viewport">
           {activeTab === 'dashboard' && (
             <DashboardOverview 
               drugs={drugs} 
