@@ -175,7 +175,8 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
       drugId: item.drug.id,
       name: item.drug.name,
       quantity: item.qty,
-      sellingPrice: item.drug.sellingPrice,
+      price: item.drug.sellingPrice,
+      batchNumber: item.drug.batchNumber || 'N/A'
     }));
 
     const salePayload = {

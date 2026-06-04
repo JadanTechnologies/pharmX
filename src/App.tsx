@@ -22,6 +22,7 @@ import Reports from './components/Reports';
 import PatientManagement from './components/PatientManagement';
 import StaffManagement from './components/StaffManagement';
 import FinancialDashboard from './components/FinancialDashboard';
+import AdminFeatures from './components/AdminFeatures';
 import { useTheme } from './context/ThemeContext';
 
 // Import our rich medical default datasets for pure offline capability
@@ -35,7 +36,7 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   // Auth contexts
   const [currentUser, setCurrentUser] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'pos' | 'inventory' | 'prescriptions' | 'suppliers' | 'ai' | 'branches' | 'audits' | 'reports' | 'patients' | 'staff' | 'financials'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'pos' | 'inventory' | 'prescriptions' | 'suppliers' | 'ai' | 'branches' | 'audits' | 'reports' | 'patients' | 'staff' | 'financials' | 'admin'>('dashboard');
 
   // Input elements for custom mock login form
   const [loginEmail, setLoginEmail] = useState('admin@pharmapos.com');
@@ -61,6 +62,7 @@ export default function App() {
       { key: 'staff', label: 'Staff & Access', icon: <ShieldX className="w-3.5 h-3.5 shrink-0" />, id: 'nav_staff', permission: 'security_admin' },
       { key: 'financials', label: 'Financials', icon: <Building2 className="w-3.5 h-3.5 shrink-0" />, id: 'nav_financials', permission: 'security_admin' },
       { key: 'reports', label: 'Reports', icon: <FileText className="w-3.5 h-3.5 shrink-0" />, id: 'nav_reports', permission: 'security_admin' },
+      { key: 'admin', label: 'Admin Features', icon: <ShieldX className="w-3.5 h-3.5 shrink-0" />, id: 'nav_admin', permission: 'security_admin' },
     ];
     return tabs.filter(tab => !tab.permission || hasPermission(tab.permission));
   }, [currentUser]);
@@ -572,21 +574,32 @@ export default function App() {
 
   // Checkout process
   const handlePOSCheckout = async (saleData: any): Promise<Sale> => {
+    if (!hasPermission('pos_checkout')) {
+      throw new Error('Access Denied: You do not have POS checkout permission');
+    }
+
     const newSale: Sale = {
       id: `sal_${Date.now()}`,
       invoiceNumber: `INV-${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date().toISOString(),
       customerName: saleData.customerName || 'Walk-in Customer',
       customerPhone: saleData.customerPhone || '',
-      items: saleData.items,
+      items: saleData.items.map((item: any) => ({
+        drugId: item.drugId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        batchNumber: item.batchNumber
+      })),
       subtotal: Number(saleData.subtotal),
       tax: Number(saleData.tax),
       discount: Number(saleData.discount),
       total: Number(saleData.total),
       paymentMethod: saleData.paymentMethod || 'cash',
-      cashierId: currentUser?.id || 'usr_anonymous',
+      cashierId: currentUser?.userId || 'usr_anonymous',
       cashierName: currentUser?.name || 'Anonymous Guest',
-      branchId: currentUser?.branchId || 'branch_1'
+      branchId: currentUser?.branchId || 'branch_1',
+      prescriptionId: saleData.prescriptionId
     };
 
     // Deduct quantities from drugs
@@ -1139,6 +1152,10 @@ export default function App() {
 
           {activeTab === 'financials' && (
             <FinancialDashboard currentUser={currentUser} />
+          )}
+
+          {activeTab === 'admin' && (
+            <AdminFeatures currentUser={currentUser} />
           )}
         </main>
 
