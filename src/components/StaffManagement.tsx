@@ -127,56 +127,55 @@ export default function StaffManagement({ currentUser }: StaffManagementProps) {
         </div>
 
         {/* Toolbar */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex gap-3 mb-5">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search staff by name, email, or role..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
+              className="input-field pl-10"
             />
           </div>
           <button
             onClick={() => setIsFormOpen(!isFormOpen)}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium flex items-center gap-2"
+            className="btn-primary"
           >
-            <Plus className="w-5 h-5" /> Add Staff
+            <Plus className="w-4 h-4" /> Add Staff
           </button>
         </div>
 
         {/* Add/Edit Form */}
         {isFormOpen && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border-l-4 border-purple-600">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Add New Staff Member</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <input
-                type="text"
-                placeholder="Staff Name *"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
-              <select
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-              >
-                <option>Pharmacist</option>
-                <option>Pharmacy Technician</option>
-                <option>Cashier</option>
-                <option>Stock Manager</option>
-                <option>Manager</option>
-              </select>
-              <input
-                type="email"
-                placeholder="Email *"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
+          <div className="glass-panel rounded-2xl p-6 mb-6 animate-slide-up border-l-4 border-purple-500">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 font-display">{editingId ? 'Edit Staff Member' : 'Add New Staff Member'}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+              <div>
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Full Name *</label>
+                <input type="text" placeholder="Staff Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Role</label>
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} className="input-field">
+                  <option>Pharmacist</option><option>Pharmacy Technician</option><option>Cashier</option><option>Stock Manager</option><option>Manager</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Email *</label>
+                <input type="email" placeholder="email@pharmax.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="input-field" />
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Phone</label>
+                <input type="tel" placeholder="+1 555-0000" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="input-field" />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <button onClick={resetForm} className="btn-secondary">Cancel</button>
+              <button onClick={handleAddStaff} className="btn-primary">{editingId ? 'Update' : 'Create'} Staff Profile</button>
+            </div>
+          </div>
+        )}
               <input
                 type="tel"
                 placeholder="Phone"

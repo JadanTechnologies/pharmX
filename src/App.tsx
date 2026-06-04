@@ -67,13 +67,59 @@ export default function App() {
     return tabs.filter(tab => !tab.permission || hasPermission(tab.permission));
   }, [currentUser]);
 
-  const navigateTo = (tabKey: string) => {
-    setActiveTab(tabKey as any);
-  };
+  const navGroups = useMemo(() => [
+    {
+      label: 'Main',
+      items: [
+        { key: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4 shrink-0" /> },
+        { key: 'pos', label: 'POS Billing', icon: <ShoppingCart className="w-4 h-4 shrink-0" /> },
+        { key: 'inventory', label: 'Inventory', icon: <Pill className="w-4 h-4 shrink-0" /> },
+        { key: 'prescriptions', label: 'Prescriptions', icon: <FileText className="w-4 h-4 shrink-0" /> },
+        { key: 'patients', label: 'Customers', icon: <UserCheck className="w-4 h-4 shrink-0" /> },
+      ]
+    },
+    {
+      label: 'Operations',
+      items: [
+        { key: 'suppliers', label: 'Suppliers & PO', icon: <Truck className="w-4 h-4 shrink-0" /> },
+        { key: 'branches', label: 'Stock Transfer', icon: <Network className="w-4 h-4 shrink-0" /> },
+        { key: 'reports', label: 'Reports', icon: <FileText className="w-4 h-4 shrink-0" /> },
+        { key: 'ai', label: 'Analytics', icon: <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" /> },
+      ]
+    },
+    {
+      label: 'Admin',
+      items: [
+        { key: 'audits', label: 'Staff & Roles', icon: <Scroll className="w-4 h-4 shrink-0" /> },
+        { key: 'staff', label: 'Access Control', icon: <ShieldX className="w-4 h-4 shrink-0" /> },
+        { key: 'financials', label: 'Financials', icon: <Building2 className="w-4 h-4 shrink-0" /> },
+        { key: 'admin', label: 'System Settings', icon: <ShieldX className="w-4 h-4 shrink-0" /> },
+      ]
+    }
+  ], []);
 
-  const canAccessTab = (tabKey: string) => {
-    return visibleTabs.some(t => t.key === tabKey);
-  };
+  const navBadges = useMemo(() => ({
+    pos: alerts.filter(a => a.type === 'low_stock' && !a.read).length,
+    prescriptions: prescriptions.filter(p => p.status === 'pending').length,
+    suppliers: purchaseOrders.filter(p => p.status === 'pending').length,
+    inventory: drugs.filter(d => d.quantity <= d.lowStockThreshold).length,
+  }), [alerts, prescriptions, purchaseOrders, drugs]);
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [liveTime, setLiveTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+  const [liveDate] = useState(new Date().toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }));
+  const [branches] = useState<Branch[]>([]);
+
+  useEffect(() => {
+    const t = setInterval(() => setLiveTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const unreadAlertsCount = alerts.filter(a => !a.read).length;
   const [drugs, setDrugs] = useState<Drug[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -853,10 +899,19 @@ export default function App() {
   // Loading Screen
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase">Loading Terminals...</span>
+      <div className={`min-h-screen flex flex-col items-center justify-center font-sans ${theme === 'dark' ? 'dark' : ''}`}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-14 h-14 border-4 border-emerald-200 dark:border-emerald-800 rounded-full"></div>
+            <div className="w-14 h-14 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Building2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">PharmaNexus Enterprise</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Initializing terminal environment...</p>
+          </div>
         </div>
       </div>
     );
@@ -865,93 +920,89 @@ export default function App() {
   // Auth Screen / Login Card Wrapper
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans relative" id="auth_screen_wrap">
-        <div className="bg-white border border-slate-200 rounded-xl shadow-xl p-8 max-w-md w-full relative z-10 space-y-6">
-          
-          {/* Brand header */}
-          <div className="text-center space-y-1">
-            <div className="inline-flex items-center justify-center bg-emerald-900 text-emerald-450 p-3 rounded-xl mb-2">
-              <Building2 className="w-6 h-6" />
+      <div className={`min-h-screen flex items-center justify-center p-4 font-sans relative ${theme === 'dark' ? 'dark' : ''}`} id="auth_screen_wrap">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"></div>
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-200/20 dark:bg-emerald-600/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-teal-200/20 dark:bg-teal-600/5 rounded-full blur-3xl"></div>
+        </div>
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10 space-y-6 animate-slide-up">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-3.5 rounded-2xl shadow-lg shadow-emerald-500/25 mb-1">
+              <Building2 className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">PharmaNexus Console</h1>
-            <p className="text-[11px] text-slate-500 leading-relaxed max-w-xs mx-auto">
-              High-Density Pharmacy POS Billing Terminal, AI-Powered RX Verification, and Multi-Branch Supply Ledger.
-            </p>
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight font-display">PharmaNexus</h1>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs mx-auto mt-1">Enterprise Pharmacy Management System</p>
+            </div>
           </div>
 
-          {/* Real Credentials Helper Card */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs text-slate-600">
-            <span className="font-bold text-[9px] text-slate-400 uppercase tracking-widest block font-mono">Select Active Terminal Profile</span>
-            <div className="grid grid-cols-2 gap-1 text-[11px]">
-              <button 
-                type="button"
-                onClick={() => { setLoginEmail('admin@pharmapos.com'); setLoginPassword('admin123'); }}
-                className="text-left bg-white border border-slate-200 hover:border-emerald-700 hover:text-emerald-950 rounded px-2 py-1 font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                🛠️ Admin Profile
-              </button>
-              <button 
-                type="button"
-                onClick={() => { setLoginEmail('pharmacist@pharmapos.com'); setLoginPassword('admin123'); }}
-                className="text-left bg-white border border-slate-200 hover:border-emerald-700 hover:text-emerald-950 rounded px-2 py-1 font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                💊 Pharmacist Profile
-              </button>
-              <button 
-                type="button"
-                onClick={() => { setLoginEmail('cashier@pharmapos.com'); setLoginPassword('admin123'); }}
-                className="text-left bg-white border border-slate-200 hover:border-emerald-700 hover:text-emerald-950 rounded px-2 py-1 font-bold transition flex items-center gap-1 cursor-pointer sm:col-span-2 text-center justify-center"
-              >
-                🛒 Cashier Profile (Mary Branch)
-              </button>
+          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-2.5">
+            <span className="font-bold text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-widest block font-mono">Quick Access Profiles</span>
+            <div className="grid grid-cols-1 gap-2 text-[11px]">
+              {[
+                { email: 'admin@pharmapos.com', pass: 'admin123', label: 'Admin Profile', icon: '🛠️' },
+                { email: 'pharmacist@pharmapos.com', pass: 'admin123', label: 'Pharmacist Profile', icon: '💊' },
+                { email: 'cashier@pharmapos.com', pass: 'admin123', label: 'Cashier Profile', icon: '🛒' },
+              ].map(profile => (
+                <button
+                  key={profile.email}
+                  type="button"
+                  onClick={() => { setLoginEmail(profile.email); setLoginPassword(profile.pass); }}
+                  className="text-left bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md dark:hover:shadow-emerald-500/10 rounded-xl px-3.5 py-2.5 font-bold transition-all cursor-pointer flex items-center gap-2.5 text-slate-700 dark:text-slate-200"
+                >
+                  <span className="text-base">{profile.icon}</span>
+                  <div>
+                    <span className="block text-xs">{profile.label}</span>
+                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-mono">{profile.email}</span>
+                  </div>
+                </button>
+              ))}
             </div>
-            <span className="block text-[9px] text-slate-400 font-mono text-center">Standard Passcode: `admin123`</span>
+            <span className="block text-[9px] text-slate-400 dark:text-slate-500 font-mono text-center mt-1">Passcode: admin123</span>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-4 text-xs">
+          <form onSubmit={handleLogin} className="space-y-4">
             {loginError && (
-              <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl font-bold flex gap-1.5 items-center">
+              <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-3 rounded-xl font-bold flex gap-2 items-center text-xs">
                 <ShieldX className="w-4 h-4 shrink-0" /> {loginError}
               </div>
             )}
-
             <div className="space-y-3">
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Corporate email address</label>
-                <input 
-                  type="email" 
-                  value={loginEmail} 
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Corporate Email</label>
+                <input
+                  type="email"
+                  value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 outline-hidden focus:border-emerald-500 rounded-xl px-4 py-2.5 text-slate-705 font-medium transition"
+                  className="input-field"
                   required
                   id="login_email_input"
                 />
               </div>
-
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Passcode key</label>
-                <input 
-                  type="password" 
-                  value={loginPassword} 
+                <label className="block text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1.5">Passcode</label>
+                <input
+                  type="password"
+                  value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 outline-hidden focus:border-emerald-500 rounded-xl px-4 py-2.5 text-slate-800 font-medium transition"
+                  className="input-field"
                   required
                   id="login_pass_input"
                 />
               </div>
             </div>
-
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full bg-emerald-600 text-white hover:bg-emerald-700 font-extrabold py-3 px-4 rounded-xl shadow-lg transition duration-200 tracking-wider uppercase text-xs cursor-pointer flex items-center justify-center gap-2"
+              className="btn-primary w-full !py-3"
               id="signin_submit_btn"
             >
-              {isLoggingIn ? "Authorizing terminal..." : "Authorize Login Session"}
+              {isLoggingIn ? (
+                <span className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Authorizing...</span>
+              ) : 'Sign In to Terminal'}
             </button>
           </form>
-
         </div>
       </div>
     );
@@ -959,204 +1010,277 @@ export default function App() {
 
   // Active Authenticated Interface Layout
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col font-sans" id="app_mainframe">
-      {/* Modern Professional Header */}
-      <header className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 border-b border-slate-700/50 shrink-0 sticky top-0 z-40 shadow-lg backdrop-blur-sm bg-opacity-95">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="bg-gradient-to-br from-teal-400 to-cyan-500 text-white p-2.5 rounded-xl shadow-lg">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="font-black text-lg text-white tracking-tight leading-none font-display">PharmaCare PRO</h1>
-              <p className="text-[10px] text-cyan-400 mt-1 font-mono tracking-wider font-semibold">Advanced Pharmacy Management System</p>
-            </div>
+    <div className={`min-h-screen flex font-sans ${theme === 'dark' ? 'dark' : ''}`} id="app_mainframe">
+      {/* ========== SIDEBAR ========== */}
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen z-40 glass-sidebar flex flex-col transition-all duration-300 ease-in-out no-print ${sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}`} id="sidebar">
+        {/* Pharmacy Brand */}
+        <div className="flex items-center gap-3 px-4 h-16 border-b border-slate-200/70 dark:border-slate-700/40 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
+            <Building2 className="w-5 h-5 text-white" />
           </div>
-
-          {/* Right Session Status */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-[11px] font-bold text-cyan-300 bg-cyan-500/10 px-3 py-1.5 rounded-full border border-cyan-500/20 font-mono shadow-sm">
-              <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-              System Online
+          {!sidebarCollapsed && (
+            <div className="animate-fade-in">
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">PharmaNexus</h2>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold tracking-wide uppercase">Enterprise</p>
             </div>
+          )}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="ml-auto text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarCollapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} /></svg>
+          </button>
+        </div>
 
-            <div className="bg-slate-700/50 px-3 py-1.5 rounded-lg text-[11px] font-bold text-cyan-300 font-mono hidden sm:block border border-slate-600/50">
+        {/* User Mini Card */}
+        {!sidebarCollapsed && currentUser && (
+          <div className="mx-3 mt-3 p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/20 border border-emerald-100 dark:border-emerald-800/30 animate-fade-in">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                {currentUser.name?.charAt(0) || 'U'}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">{currentUser.name}</p>
+                <p className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium capitalize">{currentUser.role}</p>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
               {currentUser.branchCode || 'CPB-01'}
             </div>
+          </div>
+        )}
 
-            <div className="hidden sm:flex flex-col text-right">
-              <span className="text-sm font-bold text-white flex items-center gap-1.5 justify-end">
-                <UserCheck className="w-4 h-4 text-cyan-400" /> {currentUser.name}
-              </span>
-              <span className="text-[10px] text-cyan-400/80 uppercase font-mono tracking-wider mt-0.5">{currentUser.role}</span>
-            </div>
-
-            <button 
-              onClick={toggleTheme}
-              className="bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 hover:text-white p-2.5 rounded-lg transition duration-200 cursor-pointer flex items-center gap-1.5 shrink-0 shadow-md"
-              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-              id="theme_toggle_btn"
-            >
-              {theme === 'light' ? (
-                <Moon className="w-4 h-4 text-cyan-400" />
-              ) : (
-                <Sun className="w-4 h-4 text-amber-400" />
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4">
+          {navGroups.map(group => (
+            <div key={group.label}>
+              {!sidebarCollapsed && (
+                <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest px-2 mb-1.5">{group.label}</p>
               )}
-            </button>
-
-            <button 
-              onClick={() => setShowLogoutModal(true)}
-              className="bg-slate-700 hover:bg-rose-600/20 hover:text-rose-400 border border-slate-600 hover:border-rose-500/50 text-slate-300 p-2.5 rounded-lg transition duration-200 cursor-pointer shadow-md"
-              title="Logout Session"
-              id="top_logout_btn"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* API Error Banner */}
-      {apiError && (
-        <div className="bg-gradient-to-r from-rose-600 to-rose-700 text-white text-[11px] font-semibold py-3 px-4 shadow-lg flex items-center justify-between leading-relaxed">
-          <span className="flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {apiError}</span>
-          <button onClick={loadAllDatabases} className="underline hover:no-underline font-mono px-2 py-0.5 bg-white/10 rounded hover:bg-white/20 transition">Retry</button>
-        </div>
-      )}
-
-      {/* Main Content Area */}
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Modern Sidebar Navigation */}
-        <nav className="lg:col-span-2 space-y-2 bg-gradient-to-b from-slate-800 to-slate-900 p-4 border border-slate-700/50 rounded-2xl shadow-xl text-slate-100 h-fit sticky top-24" id="navigation_rail">
-          <div className="flex items-center gap-2 border-b border-emerald-800 pb-2.5 mb-2.5 pl-1">
-            <div className="w-5.5 h-5.5 bg-emerald-400 rounded flex items-center justify-center font-bold text-emerald-950 text-xs font-display">+</div>
-            <h2 className="font-extrabold tracking-wider text-xs text-white uppercase font-display">CONSOLE RAIL</h2>
-          </div>
-
-          <span className="block text-[9px] font-black text-emerald-400 uppercase tracking-widest pl-2 mb-2 pb-1">MANAGEMENT</span>
-          {visibleTabs.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => navigateTo(tab.key)}
-              className={`w-full text-left py-2.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition duration-200 cursor-pointer ${
-                activeTab === tab.key 
-                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg font-bold' 
-                  : 'text-slate-300 hover:bg-slate-700/50 hover:text-cyan-300'
-              }`}
-              id={tab.id}
-            >
-              {tab.icon} {tab.label}
-            </button>
+              <div className="space-y-0.5">
+                {group.items.map(tab => {
+                  const isActive = activeTab === tab.key;
+                  const badgeCount = (navBadges as any)[tab.key];
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => navigateTo(tab.key)}
+                      className={`nav-item w-full ${isActive ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                      title={sidebarCollapsed ? tab.label : undefined}
+                    >
+                      {tab.icon}
+                      {!sidebarCollapsed && <span className="truncate">{tab.label}</span>}
+                      {!sidebarCollapsed && badgeCount > 0 && (
+                        <span className="nav-badge">{badgeCount}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </nav>
 
-        {/* Dynamic Inner Tab Component Render */}
-        <main className="lg:col-span-10 min-h-[600px] rounded-2xl overflow-hidden" id="tab_active_viewport">
-          {activeTab === 'dashboard' && (
-            <DashboardOverview 
-              drugs={drugs} 
-              sales={sales} 
-              alerts={alerts} 
-              navigateTo={navigateTo}
-              userBranch={currentUser.branchId}
-              onRefreshDatabases={loadAllDatabases}
-            />
+        {/* Sidebar Footer */}
+        <div className="shrink-0 p-3 border-t border-slate-200/70 dark:border-slate-700/40">
+          {!sidebarCollapsed && (
+            <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center font-mono">
+              v2.4.5 · {liveDate.split(',')[0]}
+            </div>
           )}
+        </div>
+      </aside>
 
-          {activeTab === 'pos' && (
-            <POS 
-              drugs={drugs} 
-              prescriptions={prescriptions.filter(p => p.status === 'verified')}
-              onCheckout={handlePOSCheckout} 
-              currentUser={currentUser}
-              userBranch={currentUser.branchId}
-            />
-          )}
+      {/* ========== MAIN AREA ========== */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* ========== TOP NAVBAR ========== */}
+        <header className="glass-header sticky top-0 z-30 h-16 px-4 lg:px-6 flex items-center justify-between gap-3 no-print shrink-0">
+          {/* Left: Search + AI */}
+          <div className="flex items-center gap-3 flex-1 max-w-xl">
+            <div className={`search-input flex-1 ${searchFocused ? 'ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/5' : ''}`}>
+              <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input
+                type="text"
+                placeholder="Search medicines, patients, invoices..."
+                className="bg-transparent border-none outline-none text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 w-full"
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+              />
+              <kbd className="hidden lg:inline-flex items-center text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono border border-slate-200 dark:border-slate-700">⌘K</kbd>
+            </div>
+            <button className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all hover:scale-105 cursor-pointer">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">AI Assistant</span>
+            </button>
+          </div>
 
-          {activeTab === 'inventory' && (
-            <Inventory 
-              drugs={drugs} 
-              onAddDrug={handleAddDrug} 
-              onUpdateDrug={handleUpdateDrug} 
-              onDeleteDrug={handleDeleteDrug}
-              userBranch={currentUser.branchId}
-              currentUser={currentUser}
-            />
-          )}
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1.5">
+            {/* Branch Selector */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-600 transition">
+              <Building2 className="w-3.5 h-3.5 text-emerald-500" />
+              <span>{currentUser?.branchCode || 'CPB-01'}</span>
+              <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </div>
 
-          {activeTab === 'prescriptions' && (
-            <PrescriptionCenter 
-              prescriptions={prescriptions} 
-              drugs={drugs}
-              onUploadPrescription={handleUploadPrescription}
-              onVerifyPrescription={handleVerifyPrescription}
-            />
-          )}
+            {/* Quick Actions */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowQuickActions(!showQuickActions); setShowNotifications(false); setShowUserMenu(false); }}
+                className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                title="Quick Actions"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+              </button>
+              {showQuickActions && (
+                <div className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-xl shadow-xl py-2 z-50 tooltip-enter">
+                  <button onClick={() => { navigateTo('pos'); setShowQuickActions(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2.5 cursor-pointer"><ShoppingCart className="w-4 h-4 text-emerald-500" /> New Sale</button>
+                  <button onClick={() => { navigateTo('inventory'); setShowQuickActions(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2.5 cursor-pointer"><Pill className="w-4 h-4 text-blue-500" /> Add Medicine</button>
+                  <button onClick={() => { navigateTo('prescriptions'); setShowQuickActions(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2.5 cursor-pointer"><FileText className="w-4 h-4 text-purple-500" /> New Prescription</button>
+                  <button onClick={() => { navigateTo('suppliers'); setShowQuickActions(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2.5 cursor-pointer"><Truck className="w-4 h-4 text-amber-500" /> Purchase Stock</button>
+                  <button onClick={() => { navigateTo('reports'); setShowQuickActions(false); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-2.5 cursor-pointer"><FileText className="w-4 h-4 text-cyan-500" /> Generate Report</button>
+                </div>
+              )}
+            </div>
 
-          {activeTab === 'suppliers' && (
-            <SuppliersOrders 
-              suppliers={suppliers} 
-              purchaseOrders={purchaseOrders} 
-              drugs={drugs}
-              currentUser={currentUser}
-              onAddSupplier={handleAddSupplier}
-              onAddPurchaseOrder={handleAddPurchaseOrder}
-              onReceivePO={handleReceivePO}
-              onUpdatePOStatus={handleUpdatePOStatus}
-            />
-          )}
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowNotifications(!showNotifications); setShowUserMenu(false); setShowQuickActions(false); }}
+                className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative cursor-pointer"
+                title="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadAlertsCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">{unreadAlertsCount > 9 ? '9+' : unreadAlertsCount}</span>
+                )}
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-2 w-80 glass-panel rounded-xl shadow-xl z-50 tooltip-enter max-h-96 overflow-hidden flex flex-col">
+                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Notifications</h3>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{unreadAlertsCount} unread</span>
+                  </div>
+                  <div className="overflow-y-auto flex-1 p-1.5 space-y-1">
+                    {alerts.length === 0 && <p className="text-xs text-slate-400 text-center py-6">No notifications</p>}
+                    {alerts.slice(0, 6).map(alert => (
+                      <div key={alert.id} className={`p-2.5 rounded-lg transition cursor-pointer ${alert.read ? 'opacity-60' : 'bg-slate-50 dark:bg-slate-800/50'}`}>
+                        <div className="flex items-start gap-2.5">
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${alert.severity === 'danger' ? 'bg-rose-500' : alert.severity === 'warning' ? 'bg-amber-400' : 'bg-emerald-400'}`}></div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">{alert.title}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{alert.message}</p>
+                            <p className="text-[10px] text-slate-400 mt-0.5">{alert.date}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {activeTab === 'ai' && (
-            <AIAnalyst drugsSnapshot={drugs} currentUser={currentUser} />
-          )}
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+              id="theme_toggle_btn"
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5 text-indigo-500" /> : <Sun className="w-5 h-5 text-amber-400" />}
+            </button>
 
-          {activeTab === 'branches' && (
-            <MultiBranch 
-              branches={branches} 
-              drugs={drugs}
-              currentUser={currentUser}
-              onTransferStock={handleTransferStock}
-              userBranch={currentUser.branchId}
-            />
-          )}
+            {/* User Menu */}
+            <div className="relative">
+              <button
+                onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false); setShowQuickActions(false); }}
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                  {currentUser?.name?.charAt(0) || 'U'}
+                </div>
+                <div className="hidden lg:flex flex-col items-start">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">{currentUser?.name || 'User'}</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">{currentUser?.role || ''}</span>
+                </div>
+                <svg className="w-3.5 h-3.5 text-slate-400 hidden lg:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-56 glass-panel rounded-xl shadow-xl py-2 z-50 tooltip-enter">
+                  <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-700">
+                    <p className="text-sm font-bold text-slate-800 dark:text-white">{currentUser?.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{currentUser?.email || ''}</p>
+                  </div>
+                  <button onClick={() => { setShowUserMenu(false); navigateTo('dashboard'); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-2.5"><UserCheck className="w-4 h-4" /> My Profile</button>
+                  <button onClick={() => { setShowUserMenu(false); navigateTo('admin'); }} className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-2.5"><ShieldX className="w-4 h-4" /> Settings</button>
+                  <div className="border-t border-slate-200 dark:border-slate-700 mt-1 pt-1">
+                    <button onClick={() => { setShowUserMenu(false); setShowLogoutModal(true); }} className="w-full text-left px-4 py-2.5 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition cursor-pointer flex items-center gap-2.5 font-semibold"><LogOut className="w-4 h-4" /> Sign Out</button>
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {activeTab === 'audits' && (
-            <NotificationAudits 
-              alerts={alerts} 
-              auditLogs={auditLogs}
-              roles={roles}
-              users={users}
-              branches={branches}
-              currentUser={currentUser}
-              onCreateRole={handleCreateRole}
-              onUpdateRolePermissions={handleUpdateRolePermissions}
-              onDeleteRole={handleDeleteRole}
-              onCreateUser={handleCreateUser}
-              onUpdateUserRole={handleUpdateUserRole}
-              onDeleteUser={handleDeleteUser}
-            />
-          )}
+            {/* Live Time */}
+            <div className="hidden xl:flex flex-col items-end ml-1 pl-3 border-l border-slate-200 dark:border-slate-700">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">{liveTime}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">{liveDate}</span>
+            </div>
+          </div>
+        </header>
 
-          {activeTab === 'reports' && (
-            <Reports currentUser={currentUser} />
-          )}
+        {/* Error Banner */}
+        {apiError && (
+          <div className="mx-4 lg:mx-6 mt-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold py-3 px-4 rounded-xl flex items-center justify-between shadow-sm">
+            <span className="flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {apiError}</span>
+            <button onClick={loadAllDatabases} className="underline hover:no-underline font-mono px-2 py-0.5 bg-rose-100 dark:bg-rose-900/30 rounded hover:bg-rose-200 dark:hover:bg-rose-900/50 transition cursor-pointer">Retry</button>
+          </div>
+        )}
 
-          {activeTab === 'patients' && (
-            <PatientManagement currentUser={currentUser} />
-          )}
-
-          {activeTab === 'staff' && (
-            <StaffManagement currentUser={currentUser} />
-          )}
-
-          {activeTab === 'financials' && (
-            <FinancialDashboard currentUser={currentUser} />
-          )}
-
-          {activeTab === 'admin' && (
-            <AdminFeatures currentUser={currentUser} />
-          )}
+        {/* ========== MAIN CONTENT ========== */}
+        <main className="flex-1 p-4 lg:p-6 min-w-0" id="tab_active_viewport">
+          <div className="animate-fade-in space-y-5">
+            {activeTab === 'dashboard' && (
+              <DashboardOverview drugs={drugs} sales={sales} alerts={alerts} navigateTo={navigateTo} userBranch={currentUser.branchId} onRefreshDatabases={loadAllDatabases} />
+            )}
+            {activeTab === 'pos' && (
+              <POS drugs={drugs} prescriptions={prescriptions.filter(p => p.status === 'verified')} onCheckout={handlePOSCheckout} currentUser={currentUser} userBranch={currentUser.branchId} />
+            )}
+            {activeTab === 'inventory' && (
+              <Inventory drugs={drugs} onAddDrug={handleAddDrug} onUpdateDrug={handleUpdateDrug} onDeleteDrug={handleDeleteDrug} userBranch={currentUser.branchId} currentUser={currentUser} />
+            )}
+            {activeTab === 'prescriptions' && (
+              <PrescriptionCenter prescriptions={prescriptions} drugs={drugs} onUploadPrescription={handleUploadPrescription} onVerifyPrescription={handleVerifyPrescription} />
+            )}
+            {activeTab === 'suppliers' && (
+              <SuppliersOrders suppliers={suppliers} purchaseOrders={purchaseOrders} drugs={drugs} currentUser={currentUser} onAddSupplier={handleAddSupplier} onAddPurchaseOrder={handleAddPurchaseOrder} onReceivePO={handleReceivePO} onUpdatePOStatus={handleUpdatePOStatus} />
+            )}
+            {activeTab === 'ai' && (
+              <AIAnalyst drugsSnapshot={drugs} currentUser={currentUser} />
+            )}
+            {activeTab === 'branches' && (
+              <MultiBranch branches={branches} drugs={drugs} currentUser={currentUser} onTransferStock={handleTransferStock} userBranch={currentUser.branchId} />
+            )}
+            {activeTab === 'audits' && (
+              <NotificationAudits alerts={alerts} auditLogs={auditLogs} roles={roles} users={users} branches={branches} currentUser={currentUser} onCreateRole={handleCreateRole} onUpdateRolePermissions={handleUpdateRolePermissions} onDeleteRole={handleDeleteRole} onCreateUser={handleCreateUser} onUpdateUserRole={handleUpdateUserRole} onDeleteUser={handleDeleteUser} />
+            )}
+            {activeTab === 'reports' && (
+              <Reports currentUser={currentUser} />
+            )}
+            {activeTab === 'patients' && (
+              <PatientManagement currentUser={currentUser} />
+            )}
+            {activeTab === 'staff' && (
+              <StaffManagement currentUser={currentUser} />
+            )}
+            {activeTab === 'financials' && (
+              <FinancialDashboard currentUser={currentUser} />
+            )}
+            {activeTab === 'admin' && (
+              <AdminFeatures currentUser={currentUser} />
+            )}
+          </div>
         </main>
 
       </div>
