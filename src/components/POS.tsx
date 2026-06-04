@@ -265,7 +265,7 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
                   <p className="text-[10px] text-slate-400 mt-1">Batch: {drug.batchNumber} | Exp: {drug.expiryDate} | Barcode: {drug.barcode}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-bold text-slate-700">${drug.sellingPrice.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-slate-700">₦{drug.sellingPrice.toFixed(2)}</span>
                   <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
                     {drug.quantity > 0 ? `${drug.quantity} units left` : 'Out of Stock'}
                   </p>
@@ -327,7 +327,7 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
                   <div className="font-bold text-slate-800 text-xs mt-0.5 line-clamp-1 group-hover:text-emerald-700 transition">{drug.name}</div>
                 </div>
                 <div className="flex justify-between items-end mt-1 w-full">
-                  <span className="text-xs font-extrabold text-slate-700">${drug.sellingPrice.toFixed(2)}</span>
+                  <span className="text-xs font-extrabold text-slate-700">₦{drug.sellingPrice.toFixed(2)}</span>
                   <span className={`text-[9px] font-semibold px-1 rounded ${
                     drug.quantity === 0 ? 'bg-rose-100 text-rose-700' :
                     drug.quantity < drug.lowStockThreshold ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
@@ -384,8 +384,8 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
                 </div>
               </div>
               <div className="text-right pl-2">
-                <span className="font-semibold text-slate-700 block">${(item.drug.sellingPrice * item.qty).toFixed(2)}</span>
-                <span className="text-[10px] text-slate-400 block">${item.drug.sellingPrice.toFixed(2)} ea</span>
+                <span className="font-semibold text-slate-700 block">₦{(item.drug.sellingPrice * item.qty).toFixed(2)}</span>
+                <span className="text-[10px] text-slate-400 block">₦{item.drug.sellingPrice.toFixed(2)} ea</span>
                 <button 
                   onClick={() => removeFromCart(item.drug.id)}
                   className="text-rose-400 hover:text-rose-600 transition p-1 mt-1 cursor-pointer"
@@ -442,7 +442,7 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
                 className="bg-white border border-slate-200 rounded px-1 text-xs text-slate-600 h-6 outline-hidden"
               >
                 <option value="percent">% Off</option>
-                <option value="flat">Flat $</option>
+                  <option value="flat">Flat ₦</option>
               </select>
               <input 
                 type="number"
@@ -501,21 +501,21 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
           <div className="space-y-1 text-xs text-slate-500">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="font-semibold text-slate-700">${calculations.subtotal.toFixed(2)}</span>
+              <span className="font-semibold text-slate-700">₦{calculations.subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-[10px]">
               <span>Medical Sales Tax (5.0%)</span>
-              <span className="font-semibold text-slate-700">${calculations.tax.toFixed(2)}</span>
+              <span className="font-semibold text-slate-700">₦{calculations.tax.toFixed(2)}</span>
             </div>
             {calculations.discount > 0 && (
               <div className="flex justify-between text-rose-600 font-semibold">
                 <span>Total Discount Applied</span>
-                <span>-${calculations.discount.toFixed(2)}</span>
+                <span>-₦{calculations.discount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm text-slate-800 font-bold border-t border-slate-200/50 pt-2">
               <span>Final Total</span>
-              <span className="text-emerald-700 text-base">${calculations.total.toFixed(2)}</span>
+              <span className="text-emerald-700 text-base">₦{calculations.total.toFixed(2)}</span>
             </div>
           </div>
 
@@ -580,7 +580,7 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
                     <tr key={idx}>
                       <td className="py-1 truncate max-w-[120px]">{item.name}</td>
                       <td className="text-center py-1">{item.quantity}</td>
-                      <td className="text-right py-1">${(item.price * item.quantity).toFixed(2)}</td>
+                      <td className="text-right py-1">₦{(item.price * item.quantity).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -589,10 +589,10 @@ export default function POS({ drugs, prescriptions, onCheckout, currentUser, use
               <div className="border-b border-dashed border-slate-200 my-2"></div>
               
               <div className="space-y-1 text-right">
-                <div>Subtotal: ${completedInvoice.subtotal.toFixed(2)}</div>
-                <div>Medical Tax (5%): ${completedInvoice.tax.toFixed(2)}</div>
-                {completedInvoice.discount > 0 && <div>Discount: -${completedInvoice.discount.toFixed(2)}</div>}
-                <div className="font-bold text-slate-800 text-xs mt-1">TOTAL CHARGE: ${completedInvoice.total.toFixed(2)}</div>
+                <div>Subtotal: ₦{completedInvoice.subtotal.toFixed(2)}</div>
+                <div>Medical Tax (5%): ₦{completedInvoice.tax.toFixed(2)}</div>
+                {completedInvoice.discount > 0 && <div>Discount: -₦{completedInvoice.discount.toFixed(2)}</div>}
+                <div className="font-bold text-slate-800 text-xs mt-1">TOTAL CHARGE: ₦{completedInvoice.total.toFixed(2)}</div>
               </div>
 
               <div className="border-b border-dashed border-slate-200 my-2"></div>

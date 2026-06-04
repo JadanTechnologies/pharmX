@@ -381,7 +381,7 @@ export default function SuppliersOrders({
                                   </span>
                                 )}
                               </span>
-                              <span className="font-mono text-slate-700 font-semibold">{item.quantity} units @ ${item.costPrice.toFixed(2)}</span>
+                              <span className="font-mono text-slate-700 font-semibold">{item.quantity} units @ ₦{item.costPrice.toFixed(2)}</span>
                             </div>
                           );
                         })}
@@ -393,7 +393,7 @@ export default function SuppliersOrders({
                   <div className="border-t border-slate-100 pt-3.5 mt-4 flex items-center justify-between">
                     <div>
                       <span className="block text-[9px] font-bold text-slate-400 uppercase font-mono tracking-wider">Estimated wholesale cost</span>
-                      <span className="text-sm font-extrabold text-slate-800 font-mono">${po.totalCost.toFixed(2)}</span>
+                      <span className="text-sm font-extrabold text-slate-800 font-mono">₦{po.totalCost.toFixed(2)}</span>
                     </div>
 
                     <div className="flex gap-1.5">
@@ -503,7 +503,7 @@ export default function SuppliersOrders({
                   <div className="text-left sm:text-right shrink-0 bg-slate-50 p-2 border border-slate-100 rounded-lg">
                     <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wide font-mono">Outstanding Payable Balance</span>
                     <span className={`text-xs font-extrabold font-mono ${sup.balanceDue > 0 ? 'text-amber-700' : 'text-slate-500'}`}>
-                      ${sup.balanceDue.toFixed(2)}
+                      ₦{sup.balanceDue.toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -654,7 +654,7 @@ export default function SuppliersOrders({
                         onChange={(e) => handleUpdateItemLine(idx, 'drugId', e.target.value)}
                         className="flex-1 bg-white border border-slate-200 rounded p-1.5 outline-hidden font-semibold cursor-pointer"
                       >
-                        {drugs.map(d => <option key={d.id} value={d.id}>{d.name} (wholesale cost: ${d.costPrice.toFixed(2)})</option>)}
+                        {drugs.map(d => <option key={d.id} value={d.id}>{d.name} (wholesale cost: ₦{d.costPrice.toFixed(2)})</option>)}
                       </select>
 
                       {/* Quantity input */}
@@ -688,7 +688,7 @@ export default function SuppliersOrders({
               {/* Summary Valuation */}
               <div className="p-3 bg-slate-50 rounded-lg flex justify-between items-center text-xs text-slate-600 border border-slate-150 font-sans">
                 <span className="font-bold">Estimated Grand Wholesale Total Charge</span>
-                <span className="font-extrabold text-sm text-slate-800 font-mono">${computedTotalCost.toFixed(2)}</span>
+                <span className="font-extrabold text-sm text-slate-800 font-mono">₦{computedTotalCost.toFixed(2)}</span>
               </div>
             </div>
 

@@ -89,7 +89,7 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
               <TrendingUp className="w-5 h-5 text-green-600" />
             </div>
             <h3 className="text-3xl font-bold text-slate-900 mb-1">
-              ${dashboardData.totalRevenue.toLocaleString()}
+              {'₦' + dashboardData.totalRevenue.toLocaleString()}
             </h3>
             <p className="text-green-600 text-sm font-semibold">+12.5% vs last period</p>
           </div>
@@ -99,9 +99,9 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
               <p className="text-slate-600 text-sm font-medium">Total Costs</p>
               <TrendingDown className="w-5 h-5 text-blue-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">
-              ${dashboardData.totalCosts.toLocaleString()}
-            </h3>
+              <h3 className="text-3xl font-bold text-slate-900 mb-1">
+                {'₦' + dashboardData.totalCosts.toLocaleString()}
+              </h3>
             <p className="text-blue-600 text-sm font-semibold">59.2% of revenue</p>
           </div>
 
@@ -110,9 +110,9 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
               <p className="text-slate-600 text-sm font-medium">Net Profit</p>
               <DollarSign className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">
-              ${dashboardData.netProfit.toLocaleString()}
-            </h3>
+              <h3 className="text-3xl font-bold text-slate-900 mb-1">
+                {'₦' + dashboardData.netProfit.toLocaleString()}
+              </h3>
             <p className="text-emerald-600 text-sm font-semibold">{dashboardData.profitMargin}% margin</p>
           </div>
 
@@ -121,9 +121,9 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
               <p className="text-slate-600 text-sm font-medium">Avg Daily Revenue</p>
               <CreditCard className="w-5 h-5 text-purple-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">
-              ${(dashboardData.totalRevenue / 30).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-            </h3>
+              <h3 className="text-3xl font-bold text-slate-900 mb-1">
+                {'₦' + (dashboardData.totalRevenue / 30).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+              </h3>
             <p className="text-purple-600 text-sm font-semibold">Daily average</p>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
                     </div>
                   </div>
                   <div className="text-right ml-4">
-                    <p className="font-bold text-slate-900">${cat.revenue.toLocaleString()}</p>
+                    <p className="font-bold text-slate-900">₦{cat.revenue.toLocaleString()}</p>
                     <p className="text-sm text-slate-600">{cat.percentage}%</p>
                   </div>
                 </div>
@@ -222,7 +222,7 @@ export default function FinancialDashboard({ currentUser }: FinancialDashboardPr
                 <div key={idx} className="border-b pb-4 last:border-b-0">
                   <div className="flex justify-between mb-2">
                     <p className="font-semibold text-slate-900">{exp.name}</p>
-                    <p className="font-bold text-slate-900">${exp.value.toLocaleString()}</p>
+                    <p className="font-bold text-slate-900">₦{exp.value.toLocaleString()}</p>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2">
                     <div

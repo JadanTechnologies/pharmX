@@ -68,7 +68,7 @@ export default function App() {
   }, [currentUser]);
 
   const navigateTo = (tabKey: string) => {
-    handleTabChange(tabKey);
+    setActiveTab(tabKey as any);
   };
 
   const canAccessTab = (tabKey: string) => {
@@ -362,7 +362,7 @@ export default function App() {
           };
           nextPOs = [newDraftPO, ...nextPOs];
           poModified = true;
-          logActivity("Replenish Draft Created", `Drafted standard auto-replenish order ${nextPoNo} ($${newDraftPO.totalCost.toFixed(2)}) for "${supplierName}" supplying "${drug.name}"`);
+          logActivity("Replenish Draft Created", `Drafted standard auto-replenish order ${nextPoNo} (₦${newDraftPO.totalCost.toFixed(2)}) for "${supplierName}" supplying "${drug.name}"`);
         }
       } else {
         // Clear low stock alert if it is resolved
@@ -621,7 +621,7 @@ export default function App() {
     setSales(updatedSales);
     localStorage.setItem('pharma_sales', JSON.stringify(updatedSales));
 
-    logActivity("POS Checkout", `Invoice ${newSale.invoiceNumber} processed totaling $${newSale.total.toFixed(2)} under payment method '${newSale.paymentMethod}'`);
+      logActivity("POS Checkout", `Invoice ${newSale.invoiceNumber} processed totaling ₦${newSale.total.toFixed(2)} under payment method '${newSale.paymentMethod}'`);
     checkStockRulebookCompliance(updatedDrugs, purchaseOrders, suppliers, alerts);
     return newSale;
   };
@@ -1038,7 +1038,7 @@ export default function App() {
           {visibleTabs.map(tab => (
             <button
               key={tab.key}
-              onClick={() => handleTabChange(tab.key)}
+              onClick={() => navigateTo(tab.key)}
               className={`w-full text-left py-2.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-2.5 transition duration-200 cursor-pointer ${
                 activeTab === tab.key 
                   ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-white shadow-lg font-bold' 

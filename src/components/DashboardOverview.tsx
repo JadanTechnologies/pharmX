@@ -294,7 +294,7 @@ export default function DashboardOverview({ drugs, sales, alerts, navigateTo, us
                 <YAxis stroke="#94a3b8" fontSize={9} tickLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '11px' }}
-                  formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Sales Volume']}
+                  formatter={(value: any) => [`₦${Number(value).toFixed(2)}`, 'Sales Volume']}
                 />
                 <Area type="monotone" dataKey="Sales" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#salesGrad)" />
               </AreaChart>

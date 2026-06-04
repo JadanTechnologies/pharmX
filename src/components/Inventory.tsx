@@ -507,8 +507,8 @@ export default function Inventory({ drugs, onAddDrug, onUpdateDrug, onDeleteDrug
                       </div>
                     </td>
                     <td className="p-4 font-mono">
-                      <div className="text-slate-700"><span className="text-slate-400 text-[10px] mr-1">Sell:</span>${drug.sellingPrice.toFixed(2)}</div>
-                      <div className="text-[10px] text-slate-400"><span className="text-slate-400 text-[9px] mr-1">Cost:</span>${drug.costPrice.toFixed(2)}</div>
+                      <div className="text-slate-700"><span className="text-slate-400 text-[10px] mr-1">Sell:</span>₦{drug.sellingPrice.toFixed(2)}</div>
+                      <div className="text-[10px] text-slate-400"><span className="text-slate-400 text-[9px] mr-1">Cost:</span>₦{drug.costPrice.toFixed(2)}</div>
                     </td>
                     <td className="p-4 text-center">
                       {renderSvgBarcode(drug.barcode)}
