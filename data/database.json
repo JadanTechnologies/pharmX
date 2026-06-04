@@ -382,7 +382,7 @@
       "role": "cashier",
       "action": "Checkout Transaction",
       "timestamp": "2026-06-03T09:40:15Z",
-      "details": "Processed invoice INV-1002302 total $815.64"
+      "details": "Processed invoice INV-1002302 total ₦815.64"
     }
   ],
   "alerts": [

@@ -278,7 +278,7 @@ const getInitialData = (): DBData => {
 
   const logs: ActivityLog[] = [
     { id: 'log_1', userId: 'usr_1', userEmail: 'admin@pharmacy.com', role: 'admin', action: 'Initialize Database', timestamp: '2026-06-03T12:00:00Z', details: 'Initial system seeding completed' },
-    { id: 'log_2', userId: 'usr_3', userEmail: 'cashier@pharmacy.com', role: 'cashier', action: 'Checkout Transaction', timestamp: '2026-06-03T09:40:15Z', details: 'Processed invoice INV-1002302 total $815.64' },
+    { id: 'log_2', userId: 'usr_3', userEmail: 'cashier@pharmacy.com', role: 'cashier', action: 'Checkout Transaction', timestamp: '2026-06-03T09:40:15Z', details: 'Processed invoice INV-1002302 total ₦815.64' },
   ];
 
   const alerts: NotificationAlert[] = [

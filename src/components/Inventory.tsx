@@ -648,7 +648,7 @@ export default function Inventory({ drugs, onAddDrug, onUpdateDrug, onDeleteDrug
               </div>
 
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Wholesale Cost Price ($)</label>
+                <label className="block text-slate-500 font-semibold mb-1">Wholesale Cost Price (₦)</label>
                 <input 
                   type="number" 
                   step="0.01" 
@@ -660,7 +660,7 @@ export default function Inventory({ drugs, onAddDrug, onUpdateDrug, onDeleteDrug
               </div>
 
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Retail Selling Price ($)</label>
+                <label className="block text-slate-500 font-semibold mb-1">Retail Selling Price (₦)</label>
                 <input 
                   type="number" 
                   step="0.01" 
@@ -788,7 +788,7 @@ export default function Inventory({ drugs, onAddDrug, onUpdateDrug, onDeleteDrug
               </div>
 
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Wholesale Cost Price ($)</label>
+                <label className="block text-slate-500 font-semibold mb-1">Wholesale Cost Price (₦)</label>
                 <input 
                   type="number" 
                   step="0.01" 
@@ -799,7 +799,7 @@ export default function Inventory({ drugs, onAddDrug, onUpdateDrug, onDeleteDrug
               </div>
 
               <div>
-                <label className="block text-slate-500 font-semibold mb-1">Retail Selling Price ($)</label>
+                <label className="block text-slate-500 font-semibold mb-1">Retail Selling Price (₦)</label>
                 <input 
                   type="number" 
                   step="0.01" 

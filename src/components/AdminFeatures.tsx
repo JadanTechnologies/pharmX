@@ -191,7 +191,7 @@ const LoyaltyProgramFeature = () => (
         <p className="text-sm text-slate-300">Active Members</p>
       </div>
       <div className="bg-slate-700/50 p-4 rounded-lg text-center">
-        <div className="text-3xl font-bold text-cyan-400 mb-2">₹48,900</div>
+        <div className="text-3xl font-bold text-cyan-400 mb-2">₦48,900</div>
         <p className="text-sm text-slate-300">Points Redeemed</p>
       </div>
       <div className="bg-slate-700/50 p-4 rounded-lg text-center">
@@ -216,12 +216,12 @@ const ExpenseTrackingFeature = () => (
       <tbody>
         <tr className="border-b border-slate-700">
           <td className="px-4 py-2 text-white">Rent</td>
-          <td className="px-4 py-2 text-white">₹50,000</td>
+          <td className="px-4 py-2 text-white">₦50,000</td>
           <td className="px-4 py-2 text-white">June 1</td>
         </tr>
         <tr className="border-b border-slate-700">
           <td className="px-4 py-2 text-white">Utilities</td>
-          <td className="px-4 py-2 text-white">₹5,000</td>
+          <td className="px-4 py-2 text-white">₦5,000</td>
           <td className="px-4 py-2 text-white">June 4</td>
         </tr>
       </tbody>
@@ -364,7 +364,7 @@ const PriceManagementFeature = () => (
         </div>
         <div className="flex justify-between items-center border-t border-slate-600 pt-3">
           <span className="text-cyan-400 font-bold">Selling Price</span>
-          <span className="text-cyan-400 font-bold">₹130</span>
+          <span className="text-cyan-400 font-bold">₦130</span>
         </div>
       </div>
     </div>
@@ -425,7 +425,7 @@ const ReturnsRefundsFeature = () => (
   <div className="space-y-4">
     <h2 className="text-2xl font-bold text-white mb-4">Returns & Refunds</h2>
     <div className="text-center py-8">
-      <p className="text-3xl font-bold text-white mb-2">₹12,450</p>
+      <p className="text-3xl font-bold text-white mb-2">₦12,450</p>
       <p className="text-slate-300">Total Refunds This Month</p>
     </div>
   </div>
@@ -442,7 +442,7 @@ const StaffPerformanceFeature = () => (
         </div>
         <div className="flex justify-between">
           <span className="text-white">Avg Transaction</span>
-          <span className="text-cyan-400 font-bold">₹1,250</span>
+          <span className="text-cyan-400 font-bold">₦1,250</span>
         </div>
       </div>
     </div>
@@ -481,7 +481,7 @@ const ReceivablesFeature = () => (
   <div className="space-y-4">
     <h2 className="text-2xl font-bold text-white mb-4">Receivables Tracking</h2>
     <div className="text-center py-8">
-      <p className="text-3xl font-bold text-white mb-2">₹45,000</p>
+      <p className="text-3xl font-bold text-white mb-2">₦45,000</p>
       <p className="text-slate-300">Outstanding Receivables</p>
     </div>
   </div>
