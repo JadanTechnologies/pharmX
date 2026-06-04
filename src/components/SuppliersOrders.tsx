@@ -10,6 +10,7 @@ interface SuppliersOrdersProps {
   suppliers: Supplier[];
   purchaseOrders: PurchaseOrder[];
   drugs: Drug[];
+  currentUser: any;
   onAddSupplier: (supplierData: any) => Promise<Supplier>;
   onAddPurchaseOrder: (poData: any) => Promise<PurchaseOrder>;
   onReceivePO: (poId: string) => Promise<boolean>;
@@ -19,7 +20,8 @@ interface SuppliersOrdersProps {
 export default function SuppliersOrders({ 
   suppliers, 
   purchaseOrders, 
-  drugs, 
+  drugs,
+  currentUser,
   onAddSupplier, 
   onAddPurchaseOrder, 
   onReceivePO,

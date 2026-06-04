@@ -1087,6 +1087,7 @@ export default function App() {
               suppliers={suppliers} 
               purchaseOrders={purchaseOrders} 
               drugs={drugs}
+              currentUser={currentUser}
               onAddSupplier={handleAddSupplier}
               onAddPurchaseOrder={handleAddPurchaseOrder}
               onReceivePO={handleReceivePO}
@@ -1095,13 +1096,14 @@ export default function App() {
           )}
 
           {activeTab === 'ai' && (
-            <AIAnalyst drugsSnapshot={drugs} />
+            <AIAnalyst drugsSnapshot={drugs} currentUser={currentUser} />
           )}
 
           {activeTab === 'branches' && (
             <MultiBranch 
               branches={branches} 
-              drugs={drugs} 
+              drugs={drugs}
+              currentUser={currentUser}
               onTransferStock={handleTransferStock}
               userBranch={currentUser.branchId}
             />

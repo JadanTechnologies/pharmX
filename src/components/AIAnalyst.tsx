@@ -6,9 +6,10 @@ import {
 
 interface AIAnalystProps {
   drugsSnapshot: any[];
+  currentUser: any;
 }
 
-export default function AIAnalyst({ drugsSnapshot }: AIAnalystProps) {
+export default function AIAnalyst({ drugsSnapshot, currentUser }: AIAnalystProps) {
   const [activeSegment, setActiveSegment] = useState<'safety' | 'demand'>('safety');
 
   // SAFETY CHECK STATE

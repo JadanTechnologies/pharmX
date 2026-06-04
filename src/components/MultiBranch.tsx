@@ -8,11 +8,12 @@ import { Branch, Drug } from '../types';
 interface MultiBranchProps {
   branches: Branch[];
   drugs: Drug[];
+  currentUser: any;
   onTransferStock: (payload: any) => Promise<boolean>;
   userBranch: string;
 }
 
-export default function MultiBranch({ branches, drugs, onTransferStock, userBranch }: MultiBranchProps) {
+export default function MultiBranch({ branches, drugs, currentUser, onTransferStock, userBranch }: MultiBranchProps) {
   const [selectedBarcode, setSelectedBarcode] = useState('');
   const [fromBranchId, setFromBranchId] = useState('branch_2');
   const [toBranchId, setToBranchId] = useState('branch_1');

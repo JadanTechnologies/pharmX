@@ -106,6 +106,11 @@ async function startServer() {
 
   app.put("/api/drugs/:id", (req, res) => {
     const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'inventory_write')) {
+      return res.status(403).json({ error: 'Access Denied: Only authorized staff can modify drug details.' });
+    }
+    
     const { id } = req.params;
     const updateData = req.body;
 
@@ -134,6 +139,11 @@ async function startServer() {
 
   app.delete("/api/drugs/:id", (req, res) => {
     const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'inventory_write')) {
+      return res.status(403).json({ error: 'Access Denied: Only authorized staff can delete drugs.' });
+    }
+    
     const { id } = req.params;
     const existingDrug = db.getDrugById(id);
     
@@ -156,6 +166,11 @@ async function startServer() {
 
   app.post("/api/suppliers", (req, res) => {
     const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'procurement_order')) {
+      return res.status(403).json({ error: 'Access Denied: Only authorized procurement staff can register suppliers.' });
+    }
+    
     const supplierData = req.body;
 
     const newSupplier = {
@@ -175,6 +190,11 @@ async function startServer() {
 
   app.post("/api/purchase-orders", (req, res) => {
     const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'procurement_order')) {
+      return res.status(403).json({ error: 'Access Denied: Only authorized procurement staff can create purchase orders.' });
+    }
+    
     const { supplierId, items } = req.body;
 
     const supplier = db.getSuppliers().find(s => s.id === supplierId);
@@ -407,6 +427,11 @@ async function startServer() {
 
   app.post("/api/branches/transfer", (req, res) => {
     const user = getContextUser(req);
+    
+    if (!hasPermission(user, 'inter_branch_transfer')) {
+      return res.status(403).json({ error: 'Access Denied: Only authorized staff can transfer stock between branches.' });
+    }
+    
     const { drugBarcode, fromBranchId, toBranchId, transferQuantity } = req.body;
 
     const qty = Number(transferQuantity);
