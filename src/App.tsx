@@ -1046,7 +1046,7 @@ export default function App() {
               drugs={drugs} 
               sales={sales} 
               alerts={alerts} 
-              setActiveTab={setActiveTab}
+              navigateTo={navigateTo}
               userBranch={currentUser.branchId}
               onRefreshDatabases={loadAllDatabases}
             />

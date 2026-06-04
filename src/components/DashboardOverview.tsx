@@ -220,7 +220,7 @@ export default function DashboardOverview({ drugs, sales, alerts, navigateTo, us
 
         {/* Stat 3 */}
         <div 
-          onClick={() => setActiveTab('inventory')}
+          onClick={() => navigateIfAllowed('inventory')}
           className="bg-white border border-slate-205 p-4 rounded-lg shadow-xs hover:border-slate-300 transition duration-150 cursor-pointer group"
         >
           <div className="flex justify-between items-start">
@@ -247,7 +247,7 @@ export default function DashboardOverview({ drugs, sales, alerts, navigateTo, us
 
         {/* Stat 4 */}
         <div 
-          onClick={() => setActiveTab('audits')}
+          onClick={() => navigateIfAllowed('audits')}
           className="bg-white border border-slate-205 p-4 rounded-lg shadow-xs hover:border-slate-300 transition duration-150 cursor-pointer group"
         >
           <div className="flex justify-between items-start">
@@ -390,7 +390,7 @@ export default function DashboardOverview({ drugs, sales, alerts, navigateTo, us
                 <p className="text-[11px] text-slate-400">Recent customer ticket receipts</p>
               </div>
               <button 
-                onClick={() => setActiveTab('audits')}
+                onClick={() => navigateIfAllowed('audits')}
                 className="text-emerald-700 text-xs font-bold hover:underline hover:text-emerald-800 flex items-center gap-0.5 cursor-pointer font-mono"
               >
                 Log Ledger &rarr;
